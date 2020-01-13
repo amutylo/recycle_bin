@@ -1,0 +1,49 @@
+<?php
+/**
+ * @file
+ * Contains recyclebin.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+/**
+ * Implements hook_help().
+ */
+function recycle_bin_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+  // Main module help for the recyclebin module.
+    case 'help.page.recyclebin':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Provide Recycle Bin functionality via state machine API.') . '</p>';
+      return $output;
+    default:
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ * Check if entity has field state, unset published
+ * {@inheritdoc}
+ */
+function recycle_bin_entity_insert(EntityInterface $entity) {
+  //TODO::if entity has field_state unpublish it;
+
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * { @inheritdoc }
+ */
+function recycle_bin_entity_update(EntityInterface $entity) {
+  //TODO::if entity has field_state check state and act
+}
+
+/**
+ * Implements hook_entity_delete().
+ *
+ * {@inheritdoc}
+ */
+function entity_events_entity_delete(EntityInterface $entity) {
+  //TODO:: if entity as field_state prevent from delete it.
+}

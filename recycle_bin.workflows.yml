@@ -1,0 +1,25 @@
+recycle_bin_workflow:
+  id: recycle_bin_workflow
+  group: recycle_bin
+  label: 'Recycle bin workflow'
+  states:
+    draft:
+      label: Draft
+    published:
+      label: Published
+    recycled:
+      label: Recycled
+  transitions:
+    publish:
+      label: 'Publish item'
+      from: [draft]
+      to: published
+    review:
+      label: 'Need review'
+      from: [recycled, published]
+      to: draft
+    recycle:
+      label: 'Put to recycle bin'
+      from: [draft, published]
+      to: recycled
+

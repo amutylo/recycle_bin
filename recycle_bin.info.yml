@@ -1,0 +1,7 @@
+name: Recycle Bin
+type: module
+description: Provides recycle bin workflow functionality.
+core: 8.x
+package: Other
+dependencies:
+  - state_machine
