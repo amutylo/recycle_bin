@@ -1,0 +1,23 @@
+uuid: 28b136a4-29c5-4691-90ec-c9636085ff36
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_state
+    - node.type.article
+  module:
+    - state_machine
+id: node.article.field_state
+field_name: field_state
+entity_type: node
+bundle: article
+label: State
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  workflow: recycle_bin_workflow
+  workflow_callback: ''
+field_type: state
