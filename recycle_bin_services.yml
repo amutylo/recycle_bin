@@ -1,0 +1,9 @@
+services:
+  recycle_bin.workflow.helper:
+    class: Drupal\recycle_bin\WorkflowHelper
+    arguments: ['@current_user']
+  recycle_bin.workflow_transition:
+    class: Drupal\recycle_bin\EventSubscriber\RecycleBinTransitionEventSubscriber
+    arguments: ['@recycle_bin.workflow.helper']
+      tags:
+        - { name: event_subscriber }

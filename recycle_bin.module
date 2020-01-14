@@ -4,8 +4,15 @@
  * Contains recyclebin.module.
  */
 
+define('RECYCLE_BIN_ACCESS_REALM', 'recycle_bin_access_item');
+define('RECYCLE_BIN_PUBLIC', 0);
+define('RECYCLE_BIN_PRIVATE', 1);
+
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\node\NodeInterface;
+
 /**
  * Implements hook_help().
  */
@@ -31,20 +38,15 @@ function recycle_bin_entity_insert(EntityInterface $entity) {
 
 }
 
-/**
- * Implements hook_entity_update().
- *
- * { @inheritdoc }
- */
-function recycle_bin_entity_update(EntityInterface $entity) {
-  //TODO::if entity has field_state check state and act
-}
 
 /**
- * Implements hook_entity_delete().
+ * Implements hook_entity_operation_alter().
  *
- * {@inheritdoc}
  */
-function entity_events_entity_delete(EntityInterface $entity) {
-  //TODO:: if entity as field_state prevent from delete it.
+function recycle_bin_entity_operation_alter(array &$operations, \Drupal\Core\Entity\EntityInterface $entity) {
+  // Check if entity has field_state, so such entity cannot be deleted, removing delete button from operations list.;
+    $hasStateField = $entity->get('field_state');
+    if ($hasStateField) {
+      unset($operations["delete"]);
+    }
 }
