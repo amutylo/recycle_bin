@@ -10,6 +10,7 @@ define('RECYCLE_BIN_PRIVATE', 1);
 
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 
 /**
  * Implements hook_help().
@@ -92,4 +93,19 @@ function recycle_bin_entity_delete(EntityInterface $entity) {
         }
       }
     }
+}
+
+/**
+ * Alter delete links on node view and edit pages.
+ * Implements hook_menu_local_tasks_alter().
+ */
+function recycle_bin_menu_local_tasks_alter(&$data, $route_name, RefinableCacheableDependencyInterface &$cacheability) {
+  $routes = ['entity.node.canonical', 'entity.node.edit_form'];
+  if (in_array($route_name, $routes)) {
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $type = $storage->getEntityType();
+    $cacheTags = $type->getListCacheTags();
+    $cacheability->addCacheTags($cacheTags);
+    unset($data["tabs"][0]["entity.node.delete_form"]);
+  }
 }
