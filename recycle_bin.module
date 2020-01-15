@@ -10,11 +10,13 @@ define('RECYCLE_BIN_PRIVATE', 1);
 
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\node\NodeInterface;
 
 /**
  * Implements hook_help().
+ * @param string $route_name
+ * @param RouteMatchInterface $route_match
+ *
+ * @return string
  */
 function recycle_bin_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
@@ -31,22 +33,63 @@ function recycle_bin_help($route_name, RouteMatchInterface $route_match) {
 /**
  * Implements hook_entity_insert().
  * Check if entity has field state, unset published
- * {@inheritdoc}
+ * @param EntityInterface $entity
  */
 function recycle_bin_entity_insert(EntityInterface $entity) {
   //TODO::if entity has field_state unpublish it;
+  $hasStateField = $entity->get('field_state');
+  if ($hasStateField) {
+    $entity->setUnpublished();
+  }
+}
 
+/**
+ * Implements hook_entity_update().
+ * @param EntityInterface $entity
+ */
+function recycle_bin_entity_presave(EntityInterface $entity) {
+  $hasStateField = $entity->get('field_state');
+  if ($hasStateField) {
+    $state = $entity->get('field_state')->first()->value;
+    switch($state) {
+      case 'published':
+        $entity->setPublished();
+        break;
+      case 'draft':
+      case 'recycled':
+        $entity->setUnpublished();
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_delete().
+ *
+ * {@inheritdoc}
+ */
+function recycle_bin_entity_delete(EntityInterface $entity) {
+  //TODO:: if entity as field_state prevent from delete it.
 }
 
 
 /**
  * Implements hook_entity_operation_alter().
- *
+ * @param array $operations
+ * @param EntityInterface $entity
  */
-function recycle_bin_entity_operation_alter(array &$operations, \Drupal\Core\Entity\EntityInterface $entity) {
+  function recycle_bin_entity_operation_alter(array &$operations, EntityInterface $entity) {
   // Check if entity has field_state, so such entity cannot be deleted, removing delete button from operations list.;
-    $hasStateField = $entity->get('field_state');
-    if ($hasStateField) {
-      unset($operations["delete"]);
+    $entityType = $entity->getEntityTypeId();
+    if ($entityType === 'node') {
+      $hasStateField = $entity->get('field_state');
+      if ($hasStateField) {
+        $state = $hasStateField->first()->value;
+        if ($state !== 'recycled') {
+          unset($operations["delete"]);
+        }
+      }
     }
 }

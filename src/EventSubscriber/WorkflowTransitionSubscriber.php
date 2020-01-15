@@ -9,7 +9,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Drupal\state_machine\Plugin\Workflow\WorkflowInterface;
 use Drupal\state_machine\Plugin\Workflow\WorkflowState;
 
-class RecycleBinTransitionEventSubscriber implements EventSubscriberInterface {
+class WorkflowTransitionSubscriber implements EventSubscriberInterface {
 
   /**
    * The workflow helper.
@@ -26,9 +26,11 @@ class RecycleBinTransitionEventSubscriber implements EventSubscriberInterface {
    * @inheritDoc
    */
   public static function getSubscribedEvents() {
-    return [
-      'state_machine.pre_transition' => 'handleAction',
+    $events = [
+      'recycle_bin.pre_transition' => 'handleAction',
+      'recycle_bin.recycled.pre_transition' => 'handleAction',
     ];
+    return $events;
   }
 
   public function handleAction(WorkflowTransitionEvent $event) {
