@@ -26,19 +26,17 @@ class WorkflowTransitionSubscriber implements EventSubscriberInterface {
    * @inheritDoc
    */
   public static function getSubscribedEvents() {
-    $events = [
+    return [
       'recycle_bin.pre_transition' => 'handleAction',
       'recycle_bin.recycled.pre_transition' => 'handleAction',
     ];
-    return $events;
   }
 
   public function handleAction(WorkflowTransitionEvent $event) {
     $entity = $event->getEntity();
 
-    // TODO:: wrong checking publish state!!!!!
     // Verify if the new state is marked as published state.
-    $is_published_state = $this->isPublishedState($event->getToState(), $event->getWorkflow());
+    $is_published_state = $this->isPublishedState($event);
 
     if ($entity instanceof EntityPublishedInterface) {
       if ($is_published_state) {
@@ -61,7 +59,9 @@ class WorkflowTransitionSubscriber implements EventSubscriberInterface {
    * @return bool
    *   TRUE if the state is set as published in the workflow, FALSE otherwise.
    */
-  protected function isPublishedState(WorkflowState $state, WorkflowInterface $workflow) {
+  protected function isPublishedState(WorkflowTransitionEvent $event) {
+    $state = $event->getTransition()->getToState();
+    $workflow = $event->getWorkflow();
     return $this->workflowHelper->isWorkflowStatePublished($state->getId(), $workflow);
   }
 }

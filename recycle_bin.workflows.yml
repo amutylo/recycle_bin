@@ -5,10 +5,13 @@ recycle_bin_workflow:
   states:
     draft:
       label: Draft
+      published: false
     published:
       label: Published
+      published: true
     recycled:
       label: Recycled
+      published: false
   transitions:
     publish:
       label: 'Publish item'
