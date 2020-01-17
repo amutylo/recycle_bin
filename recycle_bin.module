@@ -31,40 +31,6 @@ function recycle_bin_help($route_name, RouteMatchInterface $route_match) {
   }
 }
 
-/**
- * Implements hook_entity_insert().
- * Check if entity has field state, unset published
- * @param EntityInterface $entity
- */
-function recycle_bin_entity_insert(EntityInterface $entity) {
-  //TODO::if entity has field_state unpublish it;
-  $hasStateField = $entity->get('field_state');
-  if ($hasStateField) {
-    $entity->setUnpublished();
-  }
-}
-
-/**
- * Implements hook_entity_update().
- * @param EntityInterface $entity
- */
-function recycle_bin_entity_presave(EntityInterface $entity) {
-  $hasStateField = $entity->get('field_state');
-  if ($hasStateField) {
-    $state = $entity->get('field_state')->first()->value;
-    switch($state) {
-      case 'published':
-        $entity->setPublished();
-        break;
-      case 'draft':
-      case 'recycled':
-        $entity->setUnpublished();
-        break;
-      default:
-        break;
-    }
-  }
-}
 
 /**
  * Implements hook_entity_delete().

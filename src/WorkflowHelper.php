@@ -31,6 +31,7 @@ class WorkflowHelper {
     // Retrieve the raw plugin definition, as all additional plugin settings
     // are stored there.
     $raw_workflow_definition = $workflow->getPluginDefinition();
-    return $raw_workflow_definition['states'][$state_id]['published'] ?? NULL;
+    $isPublishedState = $raw_workflow_definition['states'][$state_id]['published'] ?? NULL;
+    return $isPublishedState;
   }
 }
