@@ -29,20 +29,6 @@ function recycle_bin_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
- * Implements hook_views_pre_view().
- */
-function recycle_bin_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
-  if ($view->id() === 'content') {
-    $account = \Drupal::currentUser();
-    $hide_delete = ($account->id() === 1)? FALSE : TRUE;
-    if ($hide_delete) {
-      $hundler = $view->getHandler($view->current_display, 'field', 'node_bulk_form');
-      $d = 0;
-    }
-  }
-}
-
-/**
  * @param $account
  *
  * @return bool
@@ -60,11 +46,14 @@ function recycle_bin_admin_access($account) {
   // Check if entity has field_state, so such entity cannot be deleted, removing delete button from operations list.;
     $entityType = $entity->getEntityTypeId();
     if ($entityType === 'node') {
-      $hasStateField = $entity->get('field_state');
-      if ($hasStateField) {
-        $state = $hasStateField->first()->value;
-        if ($state !== 'recycled') {
-          unset($operations["delete"]);
+      $fieldExist = $entity->hasField('field_state');
+      if ($fieldExist) {
+        $field = $entity->get('field_state');
+        if ($field) {
+          $state = $field->first()->value;
+          if ($state !== 'recycled') {
+            unset($operations["delete"]);
+          }
         }
       }
     }
